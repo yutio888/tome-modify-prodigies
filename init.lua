@@ -29,3 +29,5 @@ homepage = ''
 description = [[Modify some prodigies]]
 tags = { 'prodigies' }
 superload = true
+data = true
+hooks = true
