@@ -28,7 +28,8 @@ if suneff then
             			if self:reactionToward(target) < 0 then
             				local dam = eff.dam * (1 + (5 - core.fov.distance(self.x, self.y, target.x, target.y)) / 8)
             				local power = math.max(self:combatSpellpower(), self:combatMindpower(), self:combatPhysicalpower()) --try apply spellshocked before damage
-                            target:setEffect(target.EFF_WEIGHT_OF_THE_SUN, 2, {apply_power = power, reduce = 30})  -- Quickly wears off when outside of AoE
+            				target:crossTierEffect(target.EFF_SPELLSHOCKED, power)
+                            target:setEffect(target.EFF_WEIGHT_OF_THE_SUN, 2, { reduce = 30})  -- Quickly wears off when outside of AoE
             				DamageType:get(DamageType.FIRE).projector(self, target.x, target.y, DamageType.FIRE, dam/3)
             				DamageType:get(DamageType.LIGHT).projector(self, target.x, target.y, DamageType.LIGHT, dam/3)
             				DamageType:get(DamageType.PHYSICAL).projector(self, target.x, target.y, DamageType.PHYSICAL, dam/3)
