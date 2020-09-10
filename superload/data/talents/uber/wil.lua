@@ -9,7 +9,8 @@ if tyranny then
     tyranny.deactivate = nil
     tyranny.info = function(self, t)
         return ([[Transcend the physical and rule over all with an iron will!
-        Your mind attack cannot be resisted by mental save any more, and any foe fails to resist your mind attack will suffer 20%% more damage and get brainlocked for 2 turns.
+        Your mind attack cannot be resisted by mental save any more.
+        Any foe who fails to resist your mind attack will suffer 20%% more damage, and may get brainlocked for 2 turns if it is a critical strike.
         ]]):tformat()
     end
 end

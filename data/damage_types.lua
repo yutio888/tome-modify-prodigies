@@ -23,8 +23,9 @@ newDamageType{
          		end
          		if tyranny then
          		    dam = dam * 1.2
+					local crit_power = state.crit_power
                     local eff = target:hasEffect(target.EFF_BRAINLOCKED)
-         		    if not eff or eff.dur < 2 then
+         		    if not eff and crit_power > 1 then
          		        target:setEffect(target.EFF_BRAINLOCKED, 2, {})
          		    end
          		end
