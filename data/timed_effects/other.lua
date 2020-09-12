@@ -1,7 +1,7 @@
 newEffect{
     name = "FASTER_THAN_LIGHT", image = "talents/fast_as_lightning.png",
     desc = _t"Faster Than Light",
-    long_desc = function(self, eff) return ("Moving at extreme speed (1000%% faster) and gains immunity for negative status effect. ")
+    long_desc = function(self, eff) return ("Moving at extreme speed (1000%% faster) and gains immunity for negative status effect. Any action other than movement will cancel it. ")
             :tformat() end,
     type = "other",
     status = "beneficial",

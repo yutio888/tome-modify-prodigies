@@ -5,16 +5,18 @@ local _M = loadPrevious(...)
 uberTalent {
     name = "Faster Than Light",  image = "talents/fast_as_lightning.png",
     mode = "activated",
+    require = { special={desc=_t"Faster than 800% movement speed NOW", fct=function(self)
+    		if self:combatMovementSpeed() < 0.125 then return true
+    		else return false
+    		end
+    	end} },
     cooldown = 12,
     no_energy = true,
     getMult = function(self, t) return 1 end,
     callbackOnMove = function(self, eff, moved, force, ox, oy)
-        print("FTL: callbackOnMove")
         if not moved or force or (self.x == ox and self.y == oy) then return end
-        print("FTL: callbackOnMove: combatMovementSpeed", self:combatMovementSpeed())
         if self:combatMovementSpeed() >= 0.125 then return end
         local tx, ty = util.findFreeGrid(ox, oy, 1, true, {[Map.ACTOR]=true})
-        print("FTL: callbackOnMove: tx", tx)
         if not tx then return end
         local NPC = require "mod.class.NPC"
         local image = NPC.new{
@@ -45,7 +47,7 @@ uberTalent {
             never_move = 1,
             never_anger = true,
             resolvers.talents{
-                [Talents.T_TAUNT]=1, -- Add the talent so the player can see it even though we cast it manually
+                [Talents.T_TAUNT]=5, -- Add the talent so the player can see it even though we cast it manually
             },
             faction = self.faction,
             summoner = self,
@@ -77,14 +79,14 @@ uberTalent {
             	orders = {},
             })
         end
-        image:forceUseTalent(image.T_TAUNT, {ignore_cd=true, no_talent_fail = true})
+        image:forceUseTalent(image.T_TAUNT, {ignore_cd=true, no_talent_fail = true, force_level = 5})
     end,
     action = function(self, t)
         game:onTickEnd(function() self:setEffect(self.EFF_FASTER_THAN_LIGHT, 1, {}) end)
         return true
     end,
     info = function(self, t)
-        return ([[Whenever you have more than 800%% movement speed, with each move you leave behind a mirror that lasts for 2 turns.
+        return ([[Whenever you have more than 800%% movement speed, with each move you leave behind a mirror image that lasts for 2 turns.
         You may activate this skill to gain 1000%% movement speed and become immune for negative status effect for 1 turn, but any action other than movement will cancel this effect.
         Your mirrors are very fragile, any direct damage will immediately destroy it.
         ]]):tformat()
