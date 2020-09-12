@@ -3,20 +3,24 @@ local Talents = require "engine.interface.ActorTalents"
 local _M = loadPrevious(...)
 
 uberTalent {
-    name = "Faster Than Light",  image = "talents/infusion__movement.png",
+    name = "Faster Than Light",  image = "talents/fast_as_lightning.png",
     mode = "activated",
     cooldown = 12,
     no_energy = true,
     getMult = function(self, t) return 1 end,
     callbackOnMove = function(self, eff, moved, force, ox, oy)
+        print("FTL: callbackOnMove")
         if not moved or force or (self.x == ox and self.y == oy) then return end
-        if self:combatMovementSpeed() < 8 then return end
+        print("FTL: callbackOnMove: combatMovementSpeed", self:combatMovementSpeed())
+        if self:combatMovementSpeed() >= 0.125 then return end
         local tx, ty = util.findFreeGrid(ox, oy, 1, true, {[Map.ACTOR]=true})
+        print("FTL: callbackOnMove: tx", tx)
         if not tx then return end
+        local NPC = require "mod.class.NPC"
         local image = NPC.new{
             name = ("Mirror Image (%s)"):tformat(self:getName()),
             type = "image", subtype = "light",
-            ai = "mirror_image", ai_real = nil, ai_state = { talent_in=1, }, ai_target = {actor=nil},
+            ai = "summoned", ai_real = nil, ai_state = { talent_in=1, }, ai_target = {actor=nil},
             desc = _t"A blurred image.",
             image = self.image,
             add_mos = table.clone(self.add_mos, true),
@@ -45,14 +49,16 @@ uberTalent {
             },
             faction = self.faction,
             summoner = self,
+            summon_time = 2,
             heal = function() return 0 end, -- Cant ever heal
             takeHit = function(self, value, src, death_note)
                 if not src then return false, 0 end
                 if src ~= self then
                     if not death_note or death_note.source_talent_mode ~= "active" then return false, 0 end
+                    self:die()
                     return false, value
                 end
-                self:useCharge()
+                self:die()
                 return false, value
                 -- return mod.class.NPC.takeHit(self, 1, src, death_note)
             end,
@@ -62,6 +68,16 @@ uberTalent {
         }
         image:resolve()
         game.zone:addEntity(game.level, image, "actor", tx, ty)
+        if game.party:hasMember(self) then
+            game.party:addMember(image, {
+            	control=false,
+            	type="summon",
+            	title=_t"Summon",
+            	temporary_level = true,
+            	orders = {},
+            })
+        end
+        image:forceUseTalent(image.T_TAUNT, {ignore_cd=true, no_talent_fail = true})
     end,
     action = function(self, t)
         game:onTickEnd(function() self:setEffect(self.EFF_FASTER_THAN_LIGHT, 1, {}) end)
