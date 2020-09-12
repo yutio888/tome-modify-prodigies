@@ -29,6 +29,8 @@ uberTalent {
         local image = NPC.new{
             name = ("Mirror Image (%s)"):tformat(self:getName()),
             type = "image", subtype = "light",
+            color=colors.GRAY, shader = "shadow_simulacrum",
+            shader_args = { color = {0.3, 0.3, 0.3}, base = 0.3, time_factor = 4000 },
             ai = "summoned", ai_real = nil, ai_state = { talent_in=1, }, ai_target = {actor=nil},
             desc = _t"A blurred image.",
             image = self.image,
@@ -85,10 +87,6 @@ uberTalent {
             	temporary_level = true,
             	orders = {},
             })
-        end
-        if core.shader.active() then
-            image:addParticles(Particles.new("arcane_power", 1))
-            image:addParticles(Particles.new("master_summoner", 1))
         end
         image:forceUseTalent(image.T_TAUNT, {ignore_cd=true, no_talent_fail = true, force_level = 5})
     end,
