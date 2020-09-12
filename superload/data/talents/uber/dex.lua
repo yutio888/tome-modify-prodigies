@@ -84,8 +84,8 @@ uberTalent {
         return true
     end,
     info = function(self, t)
-        return ([[You movements become faster than light. Whenever you have more than 800%% movement speed, each move you leave behind a mirror that lasts for 2 turns.
-        You may activate this skill to gain 1000%% movement speed and become immune for negative status effect for 1 turn.
+        return ([[Whenever you have more than 800%% movement speed, with each move you leave behind a mirror that lasts for 2 turns.
+        You may activate this skill to gain 1000%% movement speed and become immune for negative status effect for 1 turn, but any action other than movement will cancel this effect.
         Your mirrors are very fragile, any direct damage will immediately destroy it.
         ]]):tformat()
     end,
