@@ -5,7 +5,7 @@ local tricks = Talents.talents_def['T_TRICKS_OF_THE_TRADE']
 if tricks then
     tricks.on_learn = nil
     tricks.callbackOnDealDamage = function(self, t, value, target, dead, death_node)
-    		if dead or self:attr("dont_tricks") then return end
+    		if dead or self:attr("dont_tricks") or self:attr("dont_raze") then return end
     		if not self:canSee(target) or not self:hasLOS(target.x, target.y) then return end
     		local mh, oh = self:hasDualWeapon()
                 if (mh and oh) and oh.subtype ~= "mindstar" then
