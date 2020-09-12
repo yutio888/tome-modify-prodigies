@@ -15,7 +15,14 @@ uberTalent {
     getMult = function(self, t) return 1 end,
     callbackOnMove = function(self, eff, moved, force, ox, oy)
         if not moved or force or (self.x == ox and self.y == oy) then return end
-        if self:combatMovementSpeed() >= 0.125 then return end
+        local steps = self:attr("ftl_moves")
+        if self:combatMovementSpeed() >= 0.125 then
+            if steps then self:attr("ftl_moves", -1) end
+            return
+        end
+        if not steps then self:attr("ftl_moves", 1)
+        else self:attr("ftl_moves", -1) return
+        end
         local tx, ty = util.findFreeGrid(ox, oy, 1, true, {[Map.ACTOR]=true})
         if not tx then return end
         local NPC = require "mod.class.NPC"
@@ -34,8 +41,8 @@ uberTalent {
             global_speed_add = self.global_speed_add,
             global_speed_base = self.global_speed_base,
             combat_spellspeed = self.combat_spellspeed,
-            combat_def = self.combat_def,
-            combat_armor = self.combat_armor,
+            combat_def = self.level * 4,
+            combat_armor = 0,
             max_mana = 10000,
             mana = 10000,
             rank = self.rank,
@@ -79,6 +86,10 @@ uberTalent {
             	orders = {},
             })
         end
+        if core.shader.active() then
+            image:addParticles(Particles.new("arcane_power", 1))
+            image:addParticles(Particles.new("master_summoner", 1))
+        end
         image:forceUseTalent(image.T_TAUNT, {ignore_cd=true, no_talent_fail = true, force_level = 5})
     end,
     action = function(self, t)
@@ -86,7 +97,7 @@ uberTalent {
         return true
     end,
     info = function(self, t)
-        return ([[Whenever you have more than 800%% movement speed, with each move you leave behind a mirror image that lasts for 2 turns.
+        return ([[Whenever you have more than 800%% movement speed, with every two moves you leave behind a mirror image that lasts for 2 turns.
         You may activate this skill to gain 1000%% movement speed and become immune for negative status effect for 1 turn, but any action other than movement will cancel this effect.
         Your mirrors are very fragile, any direct damage will immediately destroy it.
         ]]):tformat()
