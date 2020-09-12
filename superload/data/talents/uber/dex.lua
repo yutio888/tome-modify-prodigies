@@ -1,0 +1,77 @@
+local Talents = require "engine.interface.ActorTalents"
+
+local _M = loadPrevious(...)
+
+uberTalent {
+    name = "Faster Than Light",  image = "talents/infusion__movement.png",
+    mode = "activated",
+    cooldown = 12,
+    no_energy = true,
+    getMult = function(self, t) return 1 end,
+    callbackOnMove = function(self, eff, moved, force, ox, oy)
+        if not moved or force or (self.x == ox and self.y == oy) then return end
+        if self:combatMovementSpeed() < 8 then return end
+        local tx, ty = util.findFreeGrid(ox, oy, 1, true, {[Map.ACTOR]=true})
+        if not tx then return end
+        local image = NPC.new{
+            name = ("Mirror Image (%s)"):tformat(self:getName()),
+            type = "image", subtype = "light",
+            ai = "mirror_image", ai_real = nil, ai_state = { talent_in=1, }, ai_target = {actor=nil},
+            desc = _t"A blurred image.",
+            image = self.image,
+            add_mos = table.clone(self.add_mos, true),
+            exp_worth=0,
+            level_range = {self.level, self.level},
+            level = self.level,
+            size_category = self.size_category,
+            global_speed = self.global_speed,
+            global_speed_add = self.global_speed_add,
+            global_speed_base = self.global_speed_base,
+            combat_spellspeed = self.combat_spellspeed,
+            combat_def = self.combat_def,
+            combat_armor = self.combat_armor,
+            max_mana = 10000,
+            mana = 10000,
+            rank = self.rank,
+            difficulty_boosted = 1,
+            max_life = 1,
+            die_at = 0,
+            life_rating = 0,
+            life_regen = 0, no_life_regen = 1,
+            never_move = 1,
+            never_anger = true,
+            resolvers.talents{
+                [Talents.T_TAUNT]=1, -- Add the talent so the player can see it even though we cast it manually
+            },
+            faction = self.faction,
+            summoner = self,
+            heal = function() return 0 end, -- Cant ever heal
+            takeHit = function(self, value, src, death_note)
+                if not src then return false, 0 end
+                if src ~= self then
+                    if not death_note or death_note.source_talent_mode ~= "active" then return false, 0 end
+                    return false, value
+                end
+                self:useCharge()
+                return false, value
+                -- return mod.class.NPC.takeHit(self, 1, src, death_note)
+            end,
+            no_breath = 1,
+            remove_from_party_on_death = true,
+            free_replace = true,
+        }
+        image:resolve()
+        game.zone:addEntity(game.level, image, "actor", tx, ty)
+    end,
+    action = function(self, t)
+        game:onTickEnd(function() self:setEffect(self.EFF_FASTER_THAN_LIGHT, 1, {}) end)
+        return true
+    end,
+    info = function(self, t)
+        return ([[You movements become faster than light. Whenever you have more than 800%% movement speed, each move you leave behind a mirror that lasts for 2 turns.
+        You may activate this skill to gain 1000%% movement speed and become immune for negative status effect for 1 turn.
+        Your mirrors are very fragile, any direct damage will immediately destroy it.
+        ]]):tformat()
+    end,
+}
+return _M
