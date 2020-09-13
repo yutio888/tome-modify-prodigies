@@ -1,5 +1,5 @@
 local Talents = require "engine.interface.ActorTalents"
-
+local damDesc = Talents.main_env.damDesc
 local _M = loadPrevious(...)
 local sun = Talents.talents_def['T_IRRESISTIBLE_SUN']
 if sun then
@@ -61,9 +61,47 @@ if titan then
     titan.info = function(self, t)
         return ([[You deal a massive blow to your foe, smashing it for 350%% weapon damage, knocking it back 5 tiles, and knocking aside all foes in its path.
         All targets affected are stunned for 3 turns and applied the Counterstrike effect.
-        If the knockback makes it hit a wall, it will smash down the wall, deal additional 150%% weapon damage and daze the target for 5 turns, this ignores daze immunities.
+        If the knockback makes it hit a wall, it will smash down the wall, gain an additional +150%% weapon damage and daze the target for 5 turns, this ignores daze immunities.
         For each size category over 'big' you gain an additional +80%% weapon damage.]])
         :tformat()
+    end
+end
+
+local massiveBlow = Talents.talents_def['T_MASSIVE_BLOW']
+if massiveBlow then
+    massiveBlow.require = { special={desc=_t"Mainhand weapon damage above 150", fct=function(self) return
+		massiveBlow.getDamage(self, massiveBlow) >= 300
+	end} }
+    massiveBlow.getDamage = function(self, t)
+        local inven = self:getInven(self.INVEN_MAINHAND)
+        if inven and inven[1] then
+            local combat = self:getObjectCombat(inven[1], "mainhand")
+            local combatDamage = self:combatDamage(combat)
+            return combatDamage * 2
+        end
+        return 0
+    end
+    massiveBlow.requires_target = nil
+    massiveBlow.is_melee = nil
+    massiveBlow.range = nil
+    massiveBlow.radius = function(self, t)
+        return util.bound(self:combatLimit(t.getDamage(self, t), 10, 2, 300, 6, 600), 1, 10)
+    end
+    massiveBlow.action = function(self, t)
+        local tg = self:getTalentTarget(t)
+        self:project(tg, self.x, self.y, DamageType.PHYSKNOCKBACK, self:physicalCrit(t.getDamage(self, t)))
+        self:addParticles(Particles.new("meleestorm", 1, {radius=t.radius(self, t), img="spinningwinds_blue"}))
+        game:playSoundNear(self, "talents/cloud")
+        return true
+    end
+    massiveBlow.target = function(self, t)
+        return {type="ball", range=self:getTalentRange(t), radius=self:getTalentRadius(t), talent=t, selffire=false}
+    end
+    massiveBlow.cooldown = 12
+    massiveBlow.info = function(self, t)
+        return([[Hit the ground, making a powerful shockwave in radius %d that deals %.2f physical damage.
+        The damage and radius scales with your main hand weapon damage.
+        ]]):tformat(self:getTalentRadius(t), damDesc(self, DamageType.PHYSICAL, t.getDamage(self, t)))
     end
 end
 return _M
