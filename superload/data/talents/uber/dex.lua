@@ -3,7 +3,7 @@ local Talents = require "engine.interface.ActorTalents"
 local _M = loadPrevious(...)
 local roll = Talents.talents_def['T_ROLL_WITH_IT']
 if roll then
-    roll.type[1] = "uber/other"
+    roll.not_listed = true
 end
 uberTalent {
     name = "Faster Than Light",  image = "talents/fast_as_lightning.png",

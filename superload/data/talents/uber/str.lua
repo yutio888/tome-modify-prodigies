@@ -85,7 +85,7 @@ if massiveBlow then
     massiveBlow.is_melee = nil
     massiveBlow.range = nil
     massiveBlow.radius = function(self, t)
-        return util.bound(self:combatLimit(t.getDamage(self, t), 10, 2, 300, 6, 600), 1, 10)
+        return util.bound(self:combatLimit(t.getDamage(self, t), 10, 2, 300, 7, 600), 1, 10)
     end
     massiveBlow.action = function(self, t)
         local tg = self:getTalentTarget(t)
