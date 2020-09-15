@@ -60,5 +60,16 @@ uberTalent {
     end
 }
 
-
+uberTalent {
+    name = "Mind Over Matter",  image = "talents/mental_tyranny.png",
+    mode = "passive",
+    not_listed = true,
+    getModifier = function(self, t) return 20 end,
+    --todo
+    info = function(self, t)
+        return ([[Mind damage dealt to/by you is increased by %d%%.
+        Others are decreased by %d%%.
+        ]]):tformat(t.getModifier(self, t), t.getModifier(self, t))
+    end
+}
 return _M
