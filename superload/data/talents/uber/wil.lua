@@ -17,17 +17,7 @@ end
 
 local uw = Talents.talents_def['T_UNBREAKABLE_WILL']
 if uw then
-    uw.on_learn = function(self, t)
-        self:incIncStat(self.STAT_WIL, 30)
-    end
-    uw.on_unlearn = function(self, t)
-        self:incIncStat(self.STAT_WIL, -30)
-    end
-    uw.info = function(self, t)
-        return ([[Your will is so strong, you gain extra 30 willpower, and you may simply ignore mental effects used against you.
-        This effect can only occur once every 5 turns.]])
-        :tformat()
-    end
+    uw.not_listed = true
 end
 
 local sf = Talents.talents_def['T_SPELL_FEEDBACK']
@@ -50,4 +40,25 @@ if sf then
         :tformat(damDesc(self, DamageType.MIND, 20 + self:getWil() * 2))
     end
 end
+
+uberTalent {
+    name = "Determination",  image = "talents/unbreakable_will.png",
+    mode = "passive",
+    callbackPriorities = { callbackOnTemporaryEffect = 1 }, -- should later than most callbacks
+    callbackOnTemporaryEffect = function(self, t, eff_id, e_def, eff)
+        if e_def.type == "other" then return end
+        if e_def.status == "detrimental" then
+            eff.dur = math.floor(eff.dur * 0.75 - 1)
+        else
+            eff.dur = math.ceil(eff.dur * 1.25 + 1)
+        end
+    end,
+    info = function(self, t)
+        return ([[You are filled with determination, negating negative effects and empowering positive effects.
+        This increases the duration of new beneficial effects and reduces the duration of new negative effects applied to you by 25%% + 1 rounded up.
+        ]]):tformat()
+    end
+}
+
+
 return _M
