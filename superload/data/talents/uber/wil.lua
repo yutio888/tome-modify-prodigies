@@ -54,7 +54,7 @@ uberTalent {
         end
     end,
     info = function(self, t)
-        return ([[You are filled with determination, negating negative effects and empowering positive effects.
+        return ([[You have lived through many battles, which fills you with determination.
         This increases the duration of new beneficial effects and reduces the duration of new negative effects applied to you by 25%% + 1 rounded up.
         ]]):tformat()
     end
