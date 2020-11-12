@@ -21,12 +21,12 @@
 long_name = "Modify Prodigies"
 short_name = "modify_prodigies"
 for_module = "tome"
-version = { 1, 7, 0 }
+version = { 1, 7, 2 }
 addon_version = { 1, 0, 0 }
 weight = 250
 author = { 'yutio888' }
 homepage = ''
-description = [[Modify some prodigies]]
+description = [[Modify some prodigies, empower outdated prodigies, adjust overpowered ones and introduce new ones.]]
 tags = { 'prodigies' }
 superload = true
 data = true

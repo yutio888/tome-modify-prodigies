@@ -53,7 +53,7 @@ if tricks then
     		if not self:canSee(target) or not self:hasLOS(target.x, target.y) then return end
     		if target.__is_actor and target.T_TRICKS_OF_THE_TRADE and target:knowTalent(T_TRICKS_OF_THE_TRADE) then return end
     		local mh, oh = self:hasDualWeapon()
-                if (mh and oh) and oh.subtype == "dagger" then
+                if (mh and oh) and oh.subtype and oh.subtype == "dagger" then
                 local times = target.turn_procs.tricks or 0
                 local percent = 1 - 0.05 * times
                 if percent <= 0 then return end
@@ -64,8 +64,8 @@ if tricks then
     		end
     	end
     tricks.getDamage = function(self, t)
-        return self:combatScale(self:getCun() * self.level, 40, 1250, 90, 5000)
-        --total dam:lv 25 * cun50 * 50%phys inc -> 600;  lv 50 * cun100 * 100%phys inc-> 1800
+        return math.max(1, self:combatScale(self:getCun() * self.level, 40, 1250, 90, 5000)) + 10
+        --total dam:lv 25 * cun50 * 50%phys inc -> 750;  lv 50 * cun100 * 100%phys inc-> 2000
     end
     tricks.info = function(self, t)
         return ([[You have friends in low places and have learned some underhanded tricks.
